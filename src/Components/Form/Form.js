@@ -1,14 +1,26 @@
 import React, { useState } from "react";
 import Input from "../Inputs/Input";
+
 const Form = (props) => {
-  const data = localStorage;
   const arrData = [];
   var valueSum = 0;
-  for (let [, j] of Object.entries(data)) {
-    valueSum += Number(JSON.parse(j).sellingPrice);
+  // for (let [, j] of Object.entries(localStorage)) {
+  //   valueSum += Number(JSON.parse(j).sellingPrice);
+  //   console.log(JSON.parse(j).productName)
+  //   arrData.push(JSON.parse(j));
+  // }
+  //   console.log(localStorage)
+  // console.log((localStorage.key(0)))
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    const newkey = JSON.parse(localStorage[key]).productId;
+    const value = JSON.parse(localStorage.getItem(newkey));
+    valueSum += Number(value.sellingPrice);
 
-    arrData.unshift(JSON.parse(j));
+    arrData.unshift(value);
   }
+  console.log(arrData);
+
   const [productId, setProductId] = useState("");
   const [sellingPrice, setSellingPrice] = useState("");
   const [productName, setProductName] = useState("");
@@ -27,14 +39,17 @@ const Form = (props) => {
 
   const submitHandler = (event) => {
     event.preventDefault();
-    const obj = {
+
+    const serialisedObj = JSON.stringify({
       productId: productId,
       sellingPrice: sellingPrice,
       productName: productName,
-    };
-    const serialisedObj = JSON.stringify(obj);
+    });
+
     localStorage.setItem(productId, serialisedObj);
-    setTotalValue(valueSum);
+
+    const newValue = +sellingPrice;
+    setTotalValue(valueSum + newValue);
     setProductId("");
     setSellingPrice("");
     setProductName("");
@@ -101,8 +116,7 @@ const Form = (props) => {
             );
           })}
         </ul>
-
-        <h4>Total Value worth of Products : Rs{totalValue}</h4>
+        <h4>Total Value worth of Products : Rs{totalValue}/-</h4>
       </div>
     </React.Fragment>
   );
